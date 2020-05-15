@@ -1,4 +1,4 @@
-version: '2.3'
+version: '3'
 
 services:
         app:
@@ -8,9 +8,11 @@ services:
                         - .:/var/www
                 networks: 
                         - app-network
-                # depends_on:
-                #       db:
-                #         condition: service_healthy
+                depends_on:
+                        - db
+                        - redis
+                        # - nginx
+                        # condition: service_healthy
                                 
         nginx:
                 build: .docker/nginx
@@ -39,11 +41,11 @@ services:
                     - ./.docker/dbdata:/var/lib/mysql
                 networks: 
                     - app-network
-                healthcheck:
-                        test: ["CMD-SHELL", 'mysql -uroot --database=laravel --password=root --executes="SELECT count(table_name)> 0 FROM information_schema.tables;" --skip-column-names -B']  
-                        interval: 10s
-                        timeout: 10s
-                        retries: 4
+                # healthcheck:
+                #         test: ["CMD-SHELL", 'mysql -uroot --database=laravel --password=root --executes="SELECT count(table_name)> 0 FROM information_schema.tables;" --skip-column-names -B']  
+                #         interval: 10s
+                #         timeout: 10s
+                #         retries: 4
         redis:
                 image: redis:alpine
                 expose:
